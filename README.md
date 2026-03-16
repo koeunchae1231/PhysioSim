@@ -163,11 +163,11 @@ Database 초기화 규칙
 ## Technical Notes
 
 단위
-> bpm
-> %
-> mmHg
-> ℃
-> mg·dL
+- bpm
+- %
+- mmHg
+- ℃
+- mg·dL
 
 MAP 계산식
 > MAP = DBP + (SBP - DBP) / 3
