@@ -36,8 +36,28 @@ Java-based physiology simulation platform for modeling and visualizing vital sig
 - PRAGMA busy_timeout = 5000;
 // PRAGMA wal_autocheckpoint = 1000; / PRAGMA cache_size = -20000;
 
-## 실현 및 디자인
+## Interface
 
+### Splash Screen
+![splash](images/splash.png)
+
+### Home Screen
+![home](images/home.png)
+
+### Login Screen
+![login](images/login.png)
+
+### Vital Dashboard
+![vital](images/vital.png)
+
+### Character Normal
+![character](images/character-normal.png)
+
+### Character Fever
+![character](images/character-fever.png)
+
+### Command System
+![command](images/character-command.png)
 
 ## Devlog
 ### DAY 1
