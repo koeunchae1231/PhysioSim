@@ -6,6 +6,19 @@ Java-based physiology simulation platform for modeling and visualizing vital sig
 
 ---
 
+## 향후 개발 방향
+
+PhysioSim은 이후 개발될 **VitaCore 플랫폼의 프로토타입** 역할을 한다.
+
+향후에는 다음과 같은 방향으로 확장할 예정이다.
+
+- 웹 기반 플랫폼 구조로 확장
+- 생리 시뮬레이션 모델 확장
+- 실시간 데이터 연동
+- 인터페이스 및 시스템 구조 개선
+
+---
+
 ## 현재 구현 범위
 
 PhysioSim currently focuses on **vital-level physiological simulation**.  
@@ -222,16 +235,3 @@ Database 초기화 규칙
 
 MAP 계산식
 - MAP = DBP + (SBP - DBP) / 3
-
----
-
-## 향후 개발 방향
-
-PhysioSim은 이후 개발될 **VitaCore 플랫폼의 프로토타입** 역할을 한다.
-
-향후에는 다음과 같은 방향으로 확장할 예정이다.
-
-- 웹 기반 플랫폼 구조로 확장
-- 생리 시뮬레이션 모델 확장
-- 실시간 데이터 연동
-- 인터페이스 및 시스템 구조 개선
