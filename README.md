@@ -26,18 +26,8 @@ Java-based physiology simulation platform for modeling and visualizing vital sig
 - DB에 저장된 정보를 기반으로 캐릭터의 기본 파라미터 초기화
 
 ### 2. 생리학적 상호작용 모델
-
-다음 인체 시스템을 기반으로 생리 반응을 구성
-
-- 신경계
-- 심혈관계
-- 근육계
-- 내분비계
-- 호흡계
-- 비뇨계
-- 소화계
-
-각 시스템은 시뮬레이션 코어에서 상호작용하며 개체 상태에 영향을 준다.
+-생리 이벤트 기반 시뮬레이션
+-각 이벤트는 바이탈 변화와 캐릭터 상태를 동시에 변화시킨다.
 
 ### 3. 시각화 인터페이스
 
@@ -59,19 +49,59 @@ Java-based physiology simulation platform for modeling and visualizing vital sig
 ---
 
 ## 설계 개요
-- 패키지
-- physiosim.core: Updatable, EventBus, SimulationClock, Units/Quantity
-- physiosim.cell / tissue / organ / system: 생리 도메인 계층
-- physiosim.sim: Character, VitalSigns, HomeostasisController
-- physiosim.control: Scenario, Intervention, AlarmManager, Recorder/Playback
-- physiosim.db: Database, UserRepository, CharacterRepository, VitalRepository …
-- physiosim.ui: ModeSelect / Login / PatientView / ClinicianView
-- physiosim.event: 알람/개입/상태 변화 이벤트 타입
+
+### 패키지 구조
+
+```
+physiosim.sim
+ ├ Cell
+ ├ Tissue
+ ├ Core
+ ├ EventConsumer
+ ├ Organ
+ ├ OrganSystem
+ ├ Snapshot
+ └ SpriteState
+
+physiosim.control
+ └ Simulation
+
+physiosim.db
+ ├ Database
+ ├ UserRepository
+ ├ CharacterRepository
+ ├ VitalRepository
+ └ Passwords
+
+physiosim.ui
+ ├ App
+ ├ Navigator
+ ├ Theme
+ └ views
+     ├ SplashView
+     ├ HomeView
+     ├ SignupView
+     ├ LoginView
+     ├ MainView
+     ├ PersonalView
+     ├ CharacterCreateView
+     ├ AccountView
+     ├ ListView
+     ├ VitalView
+     └ CharacterView
+
+physiosim.event
+ ├ Command
+ ├ CommandDirection
+ ├ CommandId
+ ├ CommandMapper
+ ├ PhysioEvent
+ └ TargetSystem
+```
 
 ## Database Bootstrapping
 
 Database 초기화 규칙
-
 - `Database.open(path)`
   - 데이터베이스 연결 수행
 - `Database.setup(connection)`
@@ -170,4 +200,4 @@ Database 초기화 규칙
 - mg·dL
 
 MAP 계산식
-> MAP = DBP + (SBP - DBP) / 3
+- MAP = DBP + (SBP - DBP) / 3
