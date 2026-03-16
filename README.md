@@ -8,9 +8,6 @@
   - 환자 모드: 캐릭터 모션으로 직관적 상태 확인
 - 개발 환경: Eclipse + JDK 17 + SQLite (JDBC)
 
-<img width="736" height="772" alt="image" src="https://github.com/user-attachments/assets/5f3d2d78-ab1e-485a-a09d-54da3ca725e5" />
-
-
 ## 주요 기능
 1. 사용자 입력(성별, 키, 체중)
    > DB에 저장해 캐릭터 파라미터 초기화
