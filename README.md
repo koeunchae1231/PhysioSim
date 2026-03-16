@@ -6,6 +6,19 @@ Java-based physiology simulation platform for modeling and visualizing vital sig
 
 ---
 
+## 소개
+
+- 계층 구조  
+  **세포 → 조직 → 기관 → 기관계 → 개체(sim)**
+
+- 목표  
+  하나의 공통 시뮬레이션 코어 위에서 다양한 생리 시스템이 상호작용하도록 구성
+
+- 개발 환경  
+  **Eclipse / JDK 17 / SQLite (JDBC)**
+  
+---
+
 ## 향후 개발 방향
 
 PhysioSim은 이후 개발될 **VitaCore 플랫폼의 프로토타입** 역할을 한다.
@@ -37,19 +50,6 @@ PhysioSim currently focuses on **vital-level physiological simulation**.
 - COLD → hypothermia
 - HOT → fever
 - INFUSE → hypertension
-
----
-
-## 소개
-
-- 계층 구조  
-  **세포 → 조직 → 기관 → 기관계 → 개체(sim)**
-
-- 목표  
-  하나의 공통 시뮬레이션 코어 위에서 다양한 생리 시스템이 상호작용하도록 구성
-
-- 개발 환경  
-  **Eclipse / JDK 17 / SQLite (JDBC)**
 
 ---
 
