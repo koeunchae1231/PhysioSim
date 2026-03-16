@@ -26,8 +26,8 @@ Java-based physiology simulation platform for modeling and visualizing vital sig
 - DB에 저장된 정보를 기반으로 캐릭터의 기본 파라미터 초기화
 
 ### 2. 생리학적 상호작용 모델
--생리 이벤트 기반 시뮬레이션
--각 이벤트는 바이탈 변화와 캐릭터 상태를 동시에 변화시킨다.
+- 생리 이벤트 기반 시뮬레이션
+- 각 이벤트는 바이탈 변화와 캐릭터 상태를 동시에 변화시킨다.
 
 ### 3. 시각화 인터페이스
 
