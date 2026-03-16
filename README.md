@@ -134,18 +134,26 @@ physiosim.event
 ```
 
 ## Database Bootstrapping
+# Database 초기화 규칙
+PhysioSim은 SQLite 데이터베이스를 사용하며, Database 클래스가 로딩될 때 자동으로 데이터베이스 초기화를 수행한다.
 
-Database 초기화 규칙
-- `Database.open(path)`
-  - 데이터베이스 연결 수행
-- `Database.setup(connection)`
-  - PRAGMA 설정
-  - 스키마 생성 (멱등 처리)
-- PRAGMA foreign_keys = ON;
-- PRAGMA journal_mode = WAL;
-- PRAGMA synchronous = NORMAL;
-- PRAGMA temp_store = MEMORY;
-- PRAGMA busy_timeout = 5000;
+Database.getConnection()
+- SQLite 데이터베이스(data/physiosim.db)에 연결한다.
+
+Database.init()
+- 클래스 로딩 시 자동 실행되며 데이터베이스 스키마를 초기화한다.
+
+스키마 생성 (멱등 처리)
+- CREATE TABLE IF NOT EXISTS 구문을 사용하여 테이블이 존재하지 않을 경우에만 생성한다.
+
+현재 생성되는 테이블은 다음과 같다.
+- users
+- characters
+
+이 방식은 다음과 같은 특징을 가진다.
+- 애플리케이션 시작 시 자동 초기화
+- 기존 데이터 유지
+- 스키마 중복 생성 방지
 
 ---
 
