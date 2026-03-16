@@ -134,7 +134,7 @@ physiosim.event
 ```
 
 ## Database Bootstrapping
-# Database 초기화 규칙
+### Database 초기화 규칙
 PhysioSim은 SQLite 데이터베이스를 사용하며, Database 클래스가 로딩될 때 자동으로 데이터베이스 초기화를 수행한다.
 
 Database.getConnection()
