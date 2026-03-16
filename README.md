@@ -1,4 +1,5 @@
 # PhysioSim
+Java-based physiology simulation platform for modeling and visualizing vital signs.
 인체생리학에 의거한 자바 기반 프로젝트
 
 ## 소개
@@ -24,7 +25,20 @@
   - `physiosim.ui`: ModeSelect / Login / PatientView / ClinicianView
   - `physiosim.event`: 알람/개입/상태 변화 이벤트 타입
 
-## 진행 기록
+DB 부트스트랩(통일 규칙)
+Database.open(path): 연결만 연다.
+Database.setup(connection): PRAGMA + 스키마 생성(멱등) 을 수행한다.
+PRAGMA foreign_keys = ON;
+PRAGMA journal_mode = WAL;
+PRAGMA synchronous = NORMAL;
+PRAGMA temp_store = MEMORY;
+PRAGMA busy_timeout = 5000;
+// PRAGMA wal_autocheckpoint = 1000; / PRAGMA cache_size = -20000;
+
+## 실현 및 디자인
+
+
+## Devlog
 ### DAY 1
 - GitHub Repo 생성
 - README.md 초안 작성
@@ -67,16 +81,6 @@
 ### DAY 10
 - 캐릭터 뷰 로그 제어
 
-## 메모
+## Technical Notes
 단위 고정: bpm / % / mmHg / ℃ / mg·dL
 MAP 계산식: MAP = DBP + (SBP - DBP)/3
-
-DB 부트스트랩(통일 규칙)
-Database.open(path): 연결만 연다.
-Database.setup(connection): PRAGMA + 스키마 생성(멱등) 을 수행한다.
-PRAGMA foreign_keys = ON;
-PRAGMA journal_mode = WAL;
-PRAGMA synchronous = NORMAL;
-PRAGMA temp_store = MEMORY;
-PRAGMA busy_timeout = 5000;
-// PRAGMA wal_autocheckpoint = 1000; / PRAGMA cache_size = -20000;
