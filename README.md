@@ -28,6 +28,7 @@ PhysioSim은 이후 개발될 **VitaCore 플랫폼의 프로토타입** 역할�
 - 웹 기반 플랫폼 구조로 확장
 - 생리 시뮬레이션 모델 확장
 - 실시간 데이터 연동
+- 바이탈 데이터 테이블 자동 초기화 및 UI 연동 보완
 - 인터페이스 및 시스템 구조 개선
 
 ---
@@ -39,10 +40,11 @@ PhysioSim currently focuses on **vital-level physiological simulation**.
 
 현재 구현된 기능은 다음과 같다.
 
-- 바이탈 대시보드 시각화
+- Java Swing 기반 바이탈 대시보드 시각화
 - 명령어 기반 생리 이벤트 시스템
-- 캐릭터 상태 변화
-- SQLite 기반 사용자 / 캐릭터 / 바이탈 데이터 관리
+- 캐릭터 상태 변화 및 상태별 스프라이트 표현
+- SQLite 기반 사용자 / 캐릭터 데이터 저장 및 조회
+- JDBC Repository 기반 바이탈 데이터 저장 / 조회 로직 구현
 
 대표 이벤트 예시
 
@@ -55,15 +57,23 @@ PhysioSim currently focuses on **vital-level physiological simulation**.
 
 ## 주요 기능
 
-### 1. 사용자 입력 기반 캐릭터 생성
-- 성별, 키, 체중 입력
-- DB에 저장된 정보를 기반으로 캐릭터의 기본 파라미터 초기화
+### 1. 사용자 관리
+- 회원가입 및 로그인 기능
+- 사용자 ID, 이메일, 역할, 비밀번호 해시 저장
+- `UserRepository`를 통한 사용자 등록 및 로그인 검증
 
-### 2. 생리학적 상호작용 모델
+### 2. 사용자 입력 기반 캐릭터 생성
+- 성별, 생년월일, 키, 체중 입력
+- 입력값 검증 후 SQLite `characters` 테이블에 저장
+- 로그인 사용자 기준 캐릭터 목록 조회
+- 저장된 캐릭터 정보를 기반으로 바이탈 / 캐릭터 화면의 기본 표시값 구성
+
+### 3. 생리학적 상호작용 모델
 - 생리 이벤트 기반 시뮬레이션
 - 각 이벤트는 바이탈 변화와 캐릭터 상태를 동시에 변화시킨다.
+- `Simulation`, `Core`, `CommandMapper`를 통해 명령어를 생리 이벤트로 변환한다.
 
-### 3. 시각화 인터페이스
+### 4. 시각화 인터페이스
 
 - 실시간 그래프 및 수치 표시
 - 상태 알람 시스템
@@ -133,27 +143,73 @@ physiosim.event
  └ TargetSystem
 ```
 
+### 구조적 특징
+
+- `physiosim.ui.views`: Swing 화면 컴포넌트
+- `physiosim.ui.App`: 화면 전환, 로그인 상태 관리, Repository 호출 흐름 담당
+- `physiosim.ui.Navigator`: Vital 화면과 Character 화면 전환 및 공통 Simulation 공유
+- `physiosim.sim`, `physiosim.control`: 생리 시뮬레이션 도메인 로직
+- `physiosim.event`: 명령어와 생리 이벤트 매핑
+- `physiosim.db`: SQLite 연결 및 Repository 기반 데이터 접근
+
+---
+
 ## Database Bootstrapping
+
 ### Database 초기화 규칙
-PhysioSim은 SQLite 데이터베이스를 사용하며, Database 클래스가 로딩될 때 자동으로 데이터베이스 초기화를 수행한다.
+PhysioSim은 SQLite 데이터베이스를 사용하며, `Database` 클래스가 로딩될 때 자동으로 데이터베이스 초기화를 수행한다.
 
-Database.getConnection()
-- SQLite 데이터베이스(data/physiosim.db)에 연결한다.
+`Database.getConnection()`
+- SQLite 데이터베이스 `data/physiosim.db`에 연결한다.
 
-Database.init()
+`Database.init()`
 - 클래스 로딩 시 자동 실행되며 데이터베이스 스키마를 초기화한다.
 
 스키마 생성 (멱등 처리)
-- CREATE TABLE IF NOT EXISTS 구문을 사용하여 테이블이 존재하지 않을 경우에만 생성한다.
+- `CREATE TABLE IF NOT EXISTS` 구문을 사용하여 테이블이 존재하지 않을 경우에만 생성한다.
 
-현재 생성되는 테이블은 다음과 같다.
-- users
-- characters
+현재 자동 생성되는 테이블은 다음과 같다.
+- `users`
+- `characters`
 
-이 방식은 다음과 같은 특징을 가진다.
-- 애플리케이션 시작 시 자동 초기화
-- 기존 데이터 유지
-- 스키마 중복 생성 방지
+### 주요 테이블
+
+#### users
+- `user_id`: 사용자 ID, Primary Key
+- `email`: 사용자 이메일, Unique
+- `password_hash`: 비밀번호 해시
+- `role`: `CLINICIAN` 또는 `RESEARCHER`
+- `created_at`: 생성 시각
+
+#### characters
+- `id`: 캐릭터 ID, Auto Increment
+- `owner_id`: 캐릭터 소유 사용자 ID
+- `name`: 캐릭터 이름
+- `sex`: 성별
+- `birth`: 생년월일, YYYYMMDD
+- `height_cm`: 키
+- `weight_kg`: 몸무게
+- `created_at`: 생성 시각
+
+### 바이탈 데이터 저장소 구현 상태
+
+`VitalRepository`에는 `vitals` 테이블을 기준으로 다음 메서드가 구현되어 있다.
+
+- `insert(...)`: 캐릭터별 바이탈 기록 저장
+- `findLatestByCharacter(...)`: 특정 캐릭터의 최신 바이탈 조회
+- `findByCharacter(...)`: 특정 캐릭터의 전체 바이탈 조회
+- `findByCharacterBetween(...)`: 기간 조건으로 바이탈 조회
+
+다만 현재 `Database.init()`에서 자동 생성되는 테이블은 `users`, `characters`이며, `vitals` 테이블 생성 SQL과 화면 흐름 연동은 추가 보완 대상이다.
+
+---
+
+## CRUD 구현 상태
+
+- 사용자: 회원가입(Create), 로그인용 조회(Read)
+- 캐릭터: 생성(Create), 단건/목록 조회(Read), 삭제(Delete)
+- 바이탈: Repository 레벨 저장(Create), 최신/전체/기간 조회(Read)
+- 수정(Update): 현재 명확한 수정 기능은 별도 구현 대상
 
 ---
 
@@ -243,3 +299,7 @@ Database.init()
 
 MAP 계산식
 - MAP = DBP + (SBP - DBP) / 3
+
+비밀번호 처리
+- 현재 `Passwords` 클래스에서 SHA-256 기반 해시를 사용한다.
+- 운영 서비스 수준에서는 salt 기반 해시 알고리즘 적용이 필요하다.
