@@ -329,19 +329,19 @@ MAP 계산식
 
 ## Troubleshooting & Improvements
 
-이 프로젝트를 GitHub 코드 리뷰 및 포트폴리오 피드백을 바탕으로 개선한 내용을 기록합니다.
+이 프로젝트를 GitHub 코드 리뷰 및 포트폴리오 피드백을 바탕으로 개선한 내용을 기록
 
 ### 1. Password Hashing
 
 #### Problem
 
-* 비밀번호를 단순 SHA-256으로 해싱하여 저장하고 있었습니다.
-* Salt가 없어 Rainbow Table 및 Brute Force 공격에 취약했습니다.
+* 비밀번호를 단순 SHA-256으로 해싱하여 저장
+* Salt가 없어 Rainbow Table 및 Brute Force 공격에 취약
 
 #### Solution
 
-* SHA-256을 BCrypt로 변경했습니다.
-* 회원가입 시 BCrypt Hash를 저장하고 로그인 시 BCrypt Verify를 수행하도록 수정했습니다.
+* SHA-256을 BCrypt로 변경
+* 회원가입 시 BCrypt Hash를 저장하고 로그인 시 BCrypt Verify를 수행하도록 수정
 
 #### Result
 
@@ -354,12 +354,12 @@ MAP 계산식
 
 #### Problem
 
-* 새 데이터베이스 생성 시 `vitals` 테이블이 자동 생성되지 않았습니다.
+* 새 데이터베이스 생성 시 `vitals` 테이블이 자동 생성되지 않음
 
 #### Solution
 
-* Database 초기화 과정에서 vitals 테이블과 필요한 Index를 자동 생성하도록 수정했습니다.
-* SQLite Foreign Key(PRAGMA foreign_keys = ON)를 활성화했습니다.
+* Database 초기화 과정에서 vitals 테이블과 필요한 Index를 자동 생성하도록 수정
+* SQLite Foreign Key(PRAGMA foreign_keys = ON)를 활성화
 
 #### Result
 
@@ -372,16 +372,16 @@ MAP 계산식
 
 #### Problem
 
-* Simulation 핵심 로직에 자동화 테스트가 존재하지 않았습니다.
+* Simulation 핵심 로직에 자동화 테스트가 존재하지 않음
 
 #### Solution
 
-* JUnit 테스트를 추가했습니다.
+* JUnit 테스트 추가
 * 초기값
 * Tick 처리
 * Stress 상한/하한
 * Bleeding 명령
-* Clamp 범위를 검증합니다.
+* Clamp 범위를 검증
 
 #### Result
 
@@ -392,6 +392,6 @@ MAP 계산식
 
 ### Compatibility Note
 
-BCrypt는 기존 SHA-256 해시와 호환되지 않습니다.
+BCrypt는 기존 SHA-256 해시와 호환되지 않음
 
 기존 테스트 계정은 재가입하거나 Password Migration이 필요합니다.
