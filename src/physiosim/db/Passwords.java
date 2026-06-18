@@ -1,26 +1,28 @@
-// src/physiosim/db/Passwords.java
 package physiosim.db;
 
-import java.security.MessageDigest;
-import java.util.Base64;
+import org.mindrot.jbcrypt.BCrypt;
 
 public final class Passwords {
 
+    private static final int BCRYPT_COST = 12;
+
     private Passwords() {}
 
-    // 비밀번호 → SHA-256 해시(Base64)
+    // Password -> bcrypt hash
     public static String hash(String plain) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] digest = md.digest(plain.getBytes());
-            return Base64.getEncoder().encodeToString(digest);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return BCrypt.hashpw(plain, BCrypt.gensalt(BCRYPT_COST));
     }
 
-    // 해시 검증
+    // bcrypt verification
     public static boolean verify(String plain, String storedHash) {
-        return hash(plain).equals(storedHash);
+        if (plain == null || storedHash == null || storedHash.isBlank()) {
+            return false;
+        }
+
+        try {
+            return BCrypt.checkpw(plain, storedHash);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }

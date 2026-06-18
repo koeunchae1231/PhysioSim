@@ -200,7 +200,8 @@ PhysioSim은 SQLite 데이터베이스를 사용하며, `Database` 클래스가 
 - `findByCharacter(...)`: 특정 캐릭터의 전체 바이탈 조회
 - `findByCharacterBetween(...)`: 기간 조건으로 바이탈 조회
 
-다만 현재 `Database.init()`에서 자동 생성되는 테이블은 `users`, `characters`이며, `vitals` 테이블 생성 SQL과 화면 흐름 연동은 추가 보완 대상이다.
+현재 `Database.init()`에서 자동 생성되는 테이블은 `users`, `characters`, `vitals`이다.
+`vitals.character_id`는 `characters.id`를 참조하며, 캐릭터 삭제 시 관련 바이탈 기록도 함께 삭제되도록 구성했다.
 
 ---
 
@@ -210,6 +211,27 @@ PhysioSim은 SQLite 데이터베이스를 사용하며, `Database` 클래스가 
 - 캐릭터: 생성(Create), 단건/목록 조회(Read), 삭제(Delete)
 - 바이탈: Repository 레벨 저장(Create), 최신/전체/기간 조회(Read)
 - 수정(Update): 현재 명확한 수정 기능은 별도 구현 대상
+
+---
+
+## Security Improvements
+
+- 비밀번호 저장 로직은 `Passwords` 클래스에서 bcrypt 기반 해시로 처리한다.
+- 회원가입 시 `UserRepository.register(...)`가 `Passwords.hash(...)` 결과를 `users.password_hash`에 저장한다.
+- 로그인 시 `UserRepository.login(...)`이 `Passwords.verify(...)`로 입력 비밀번호와 저장 해시를 비교한다.
+- bcrypt 의존성은 Maven `pom.xml`의 `org.mindrot:jbcrypt`로 관리한다.
+
+---
+
+## Test Coverage
+
+`SimulationTest`는 기본 바이탈, 시간 진행 예외 처리, 스트레스 경계값, 강한 출혈 명령 후 안전 범위 유지 여부를 검증한다.
+
+테스트 실행:
+
+```bash
+mvn test
+```
 
 ---
 
@@ -301,5 +323,75 @@ MAP 계산식
 - MAP = DBP + (SBP - DBP) / 3
 
 비밀번호 처리
-- 현재 `Passwords` 클래스에서 SHA-256 기반 해시를 사용한다.
-- 운영 서비스 수준에서는 salt 기반 해시 알고리즘 적용이 필요하다.
+- 현재 `Passwords` 클래스에서 bcrypt 기반 해시를 사용한다.
+
+---
+
+## Troubleshooting & Improvements
+
+이 프로젝트를 GitHub 코드 리뷰 및 포트폴리오 피드백을 바탕으로 개선한 내용을 기록합니다.
+
+### 1. Password Hashing
+
+#### Problem
+
+* 비밀번호를 단순 SHA-256으로 해싱하여 저장하고 있었습니다.
+* Salt가 없어 Rainbow Table 및 Brute Force 공격에 취약했습니다.
+
+#### Solution
+
+* SHA-256을 BCrypt로 변경했습니다.
+* 회원가입 시 BCrypt Hash를 저장하고 로그인 시 BCrypt Verify를 수행하도록 수정했습니다.
+
+#### Result
+
+* Salt 기반 Password Hashing 적용
+* 실무에서 일반적으로 사용하는 Password Storage 방식으로 개선
+
+---
+
+### 2. Database Initialization
+
+#### Problem
+
+* 새 데이터베이스 생성 시 `vitals` 테이블이 자동 생성되지 않았습니다.
+
+#### Solution
+
+* Database 초기화 과정에서 vitals 테이블과 필요한 Index를 자동 생성하도록 수정했습니다.
+* SQLite Foreign Key(PRAGMA foreign_keys = ON)를 활성화했습니다.
+
+#### Result
+
+* Fresh DB에서도 정상 실행
+* Referential Integrity 강화
+
+---
+
+### 3. Simulation Test Coverage
+
+#### Problem
+
+* Simulation 핵심 로직에 자동화 테스트가 존재하지 않았습니다.
+
+#### Solution
+
+* JUnit 테스트를 추가했습니다.
+* 초기값
+* Tick 처리
+* Stress 상한/하한
+* Bleeding 명령
+* Clamp 범위를 검증합니다.
+
+#### Result
+
+* 주요 Simulation 로직 회귀 테스트 가능
+* 향후 리팩토링 안정성 향상
+
+---
+
+### Compatibility Note
+
+BCrypt는 기존 SHA-256 해시와 호환되지 않습니다.
+
+기존 테스트 계정은 재가입하거나 Password Migration이 필요합니다.
